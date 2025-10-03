@@ -296,8 +296,6 @@ export default function TimeTracker() {
           <h1 className="text-3xl font-bold">Time Tracker</h1>
         </div>
 
-        <Card>
-          <CardContent className="">
             <div className="flex flex-col sm:flex-row gap-4 justify-between">
               <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-end">
                 <div className="w-full sm:w-auto">
@@ -336,8 +334,6 @@ export default function TimeTracker() {
                 </Button>
               </div>
             </div>
-          </CardContent>
-        </Card>
 
         {activeView == 'entries' &&
           <BasicTable
