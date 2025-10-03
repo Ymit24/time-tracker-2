@@ -1,6 +1,26 @@
 // TimeTracker.tsx
 import { ChangeEvent, useEffect, useState } from 'react';
 import { Button } from './components/ui/button';
+import { Input } from './components/ui/input';
+import { Label } from './components/ui/label';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from './components/ui/table';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from './components/ui/dialog';
+import { Card, CardContent, CardHeader, CardTitle } from './components/ui/card';
+import { Play, Square, Plus, Trash2 } from 'lucide-react';
 
 function createData(
   id: number,
@@ -76,38 +96,49 @@ function BasicTable({
   deleteEntryFunc: (id: number) => void
 }) {
   return (
-    <div className="overflow-x-auto mb-5">
-      <table className="w-full border-collapse">
-        <thead>
-          <tr className="bg-gray-100">
-            <th className="border border-gray-300 px-4 py-2 text-left">Name</th>
-            <th className="border border-gray-300 px-4 py-2 text-left">Start</th>
-            <th className="border border-gray-300 px-4 py-2 text-left">Stop</th>
-            <th className="border border-gray-300 px-4 py-2 text-left">Duration</th>
-            <th className="border border-gray-300 px-4 py-2 text-center">Controls</th>
-          </tr>
-        </thead>
-        <tbody>
-          {timeSheet.entries.map((row) => (
-            <tr key={row.id}>
-              <td className="border border-gray-300 px-4 py-2">{row.name}</td>
-              <td className="border border-gray-300 px-4 py-2">{row.start?.toLocaleString()}</td>
-              <td className="border border-gray-300 px-4 py-2">{row.isStopped ? row.stop?.toLocaleString() : "In Progress"}</td>
-              <td className="border border-gray-300 px-4 py-2">{getDurationStrForDates(row.start, row.stop)}</td>
-              <td className="border border-gray-300 px-4 py-2">
-                <div className="flex gap-2 justify-center">
-                  {!row.isStopped ?
-                    <button onClick={() => stopEntryFunc(row.id)} className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition-colors">⏹</button>
-                    : <button onClick={() => newEntryFrom(row)} className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition-colors">➕</button>
-                  }
-                  <button className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition-colors" onClick={() => deleteEntryFunc(row.id)}>🗑️</button>
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>Time Entries</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Name</TableHead>
+              <TableHead>Start</TableHead>
+              <TableHead>Stop</TableHead>
+              <TableHead>Duration</TableHead>
+              <TableHead className="text-center">Controls</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {timeSheet.entries.map((row) => (
+              <TableRow key={row.id}>
+                <TableCell className="font-medium">{row.name}</TableCell>
+                <TableCell>{row.start?.toLocaleString()}</TableCell>
+                <TableCell>{row.isStopped ? row.stop?.toLocaleString() : "In Progress"}</TableCell>
+                <TableCell>{getDurationStrForDates(row.start, row.stop)}</TableCell>
+                <TableCell>
+                  <div className="flex justify-center gap-2">
+                    {!row.isStopped ?
+                      <Button size="sm" variant="secondary" onClick={() => stopEntryFunc(row.id)}>
+                        <Square className="h-4 w-4" />
+                      </Button>
+                      : <Button size="sm" variant="outline" onClick={() => newEntryFrom(row)}>
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    }
+                    <Button size="sm" variant="destructive" onClick={() => deleteEntryFunc(row.id)}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -132,56 +163,36 @@ function SummaryTable({ timeSheet }: { timeSheet: TimeSheet }) {
   });
 
   return (
-    <div className="overflow-x-auto mb-5">
-      <table className="w-full border-collapse">
-        <thead>
-          <tr className="bg-gray-100">
-            <th className="border border-gray-300 px-4 py-2 text-left">Name</th>
-            <th className="border border-gray-300 px-4 py-2 text-right">Duration</th>
-            <th className="border border-gray-300 px-4 py-2 text-right">Entries</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row) => (
-            <tr key={row.name}>
-              <td className="border border-gray-300 px-4 py-2">{row.name}</td>
-              <td className="border border-gray-300 px-4 py-2 text-right">{row.durationStr}</td>
-              <td className="border border-gray-300 px-4 py-2 text-right">{row.entries.toString()}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>Summary</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Name</TableHead>
+              <TableHead className="text-right">Duration</TableHead>
+              <TableHead className="text-right">Entries</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {rows.map((row) => (
+              <TableRow key={row.name}>
+                <TableCell className="font-medium">{row.name}</TableCell>
+                <TableCell className="text-right">{row.durationStr}</TableCell>
+                <TableCell className="text-right">{row.entries.toString()}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
   );
 }
 
 function getDurationOf(entry: TimeEntry): number {
   return (entry.stop || new Date()).valueOf() - entry.start.valueOf();
-}
-
-// ClearDialog Component
-function ClearDialog({
-  isOpen,
-  onClose,
-  onClear
-}: {
-  isOpen: boolean,
-  onClose: () => void,
-  onClear: () => void
-}) {
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white p-5 rounded-lg shadow-lg min-w-[300px]">
-        <h3 className="mt-0 mb-4 text-lg font-medium">Clear this timesheet?</h3>
-        <div className="flex gap-3 justify-end mt-5">
-          <button onClick={() => { onClose(); onClear(); }} className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 transition-colors">Clear</button>
-          <button onClick={onClose} className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition-colors">Cancel</button>
-        </div>
-      </div>
-    </div>
-  );
 }
 
 // Main TimeTracker Component
@@ -279,52 +290,87 @@ export default function TimeTracker() {
   }, [timesheet]);
 
   return (
-    <div className="max-w-6xl mx-auto p-5 font-sans">
-      <h1 className="text-3xl font-bold mb-5">Time Tracker</h1>
+    <div className="container mx-auto py-6 max-w-6xl">
+      <div className="flex flex-col space-y-6">
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-bold">Time Tracker</h1>
+        </div>
 
-      <div className="flex justify-between items-center mb-5 flex-wrap gap-3">
-        <div className="flex gap-3">
-          <input
-            type="text"
-            className={`px-3 py-2 border rounded ${titleIsError ? "border-red-500" : "border-gray-300"}`}
-            value={newEntryTitle}
-            onChange={onChangeNewEntryTitle}
-            placeholder='Name'
+        <Card>
+          <CardContent className="">
+            <div className="flex flex-col sm:flex-row gap-4 justify-between">
+              <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-end">
+                <div className="w-full sm:w-auto">
+                  <Label htmlFor="entry-name" className={titleIsError ? "text-destructive" : ""}>
+                    Entry Name
+                  </Label>
+                  <Input
+                    id="entry-name"
+                    type="text"
+                    className={titleIsError ? "border-destructive mt-2" : "mt-2"}
+                    value={newEntryTitle}
+                    onChange={onChangeNewEntryTitle}
+                    placeholder='Enter task name'
+                  />
+                  {titleIsError && <p className="text-sm text-destructive mt-1">Please enter a task name</p>}
+                </div>
+                <Button onClick={createNewEntry} className="mt-6 sm:mt-0">
+                  <Plus className="mr-2 h-4 w-4" />
+                  New Entry
+                </Button>
+              </div>
+
+              <div className="flex gap-2 items-end">
+                {activeView == 'entries' &&
+                  <Button variant="outline" onClick={() => setActiveView('summary')}>
+                    Show Summary
+                  </Button>
+                }
+                {activeView == 'summary' &&
+                  <Button variant="outline" onClick={() => setActiveView('entries')}>
+                    Show Entries
+                  </Button>
+                }
+                <Button variant="destructive" onClick={() => setShowingClearDialog(true)}>
+                  Clear All
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {activeView == 'entries' &&
+          <BasicTable
+            timeSheet={timesheet}
+            stopEntryFunc={stopEntry}
+            newEntryFrom={newEntryFrom}
+            deleteEntryFunc={deleteEntry}
           />
-          <Button onClick={createNewEntry}>New</Button>
-        </div>
+        }
 
-        <div className="flex gap-3">
-          {activeView == 'entries' &&
-            <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors" onClick={() => setActiveView('summary')}>show summary</button>
-          }
-          {activeView == 'summary' &&
-            <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors" onClick={() => setActiveView('entries')}>show entries</button>
-          }
-          <button className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors" onClick={() => setShowingClearDialog(true)}>Clear</button>
-        </div>
+        {activeView == 'summary' &&
+          <SummaryTable timeSheet={timesheet} />
+        }
+
+        <Dialog open={showingClearDialog} onOpenChange={setShowingClearDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Clear this timesheet?</DialogTitle>
+              <DialogDescription>
+                This action cannot be undone. This will permanently delete all your time entries.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowingClearDialog(false)}>
+                Cancel
+              </Button>
+              <Button variant="destructive" onClick={() => { setShowingClearDialog(false); clearTimesheet(); }}>
+                Clear
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
-
-      <h2 className="text-2xl font-semibold mb-4">{activeView == 'entries' ? "Entries" : "Summary"}</h2>
-
-      {activeView == 'entries' &&
-        <BasicTable
-          timeSheet={timesheet}
-          stopEntryFunc={stopEntry}
-          newEntryFrom={newEntryFrom}
-          deleteEntryFunc={deleteEntry}
-        />
-      }
-
-      {activeView == 'summary' &&
-        <SummaryTable timeSheet={timesheet} />
-      }
-
-      <ClearDialog
-        isOpen={showingClearDialog}
-        onClose={() => setShowingClearDialog(false)}
-        onClear={clearTimesheet}
-      />
     </div>
   );
 }
