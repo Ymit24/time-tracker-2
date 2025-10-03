@@ -42,6 +42,26 @@ type TimeSheet = {
     entries: TimeEntry[]
 };
 
+// Function to load timesheet from localStorage
+function loadTimesheetFromStorage(): TimeSheet {
+    try {
+        const storedData = localStorage.getItem('timesheet');
+        if (!storedData) return { entries: [] };
+        
+        const originalExistingTimesheet = JSON.parse(storedData) as TimeSheet;
+        return {
+            entries: originalExistingTimesheet.entries.map((entry) => ({
+                ...entry,
+                start: new Date(entry.start),
+                stop: entry.stop ? new Date(entry.stop) : undefined,
+            }))
+        };
+    } catch (error) {
+        console.error('Error loading timesheet from localStorage:', error);
+        return { entries: [] };
+    }
+}
+
 // BasicTable Component
 function BasicTable({
     timeSheet,
@@ -55,31 +75,31 @@ function BasicTable({
     deleteEntryFunc: (id: number) => void
 }) {
     return (
-        <div className="table-container">
-            <table>
+        <div className="overflow-x-auto mb-5">
+            <table className="w-full border-collapse">
                 <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Start</th>
-                        <th>Stop</th>
-                        <th>Duration</th>
-                        <th>Controls</th>
+                    <tr className="bg-gray-100">
+                        <th className="border border-gray-300 px-4 py-2 text-left">Name</th>
+                        <th className="border border-gray-300 px-4 py-2 text-left">Start</th>
+                        <th className="border border-gray-300 px-4 py-2 text-left">Stop</th>
+                        <th className="border border-gray-300 px-4 py-2 text-left">Duration</th>
+                        <th className="border border-gray-300 px-4 py-2 text-center">Controls</th>
                     </tr>
                 </thead>
                 <tbody>
                     {timeSheet.entries.map((row) => (
                         <tr key={row.id}>
-                            <td>{row.name}</td>
-                            <td>{row.start?.toLocaleString()}</td>
-                            <td>{row.isStopped ? row.stop?.toLocaleString() : "In Progress"}</td>
-                            <td>{getDurationStrForDates(row.start, row.stop)}</td>
-                            <td>
-                                <div className="controls">
+                            <td className="border border-gray-300 px-4 py-2">{row.name}</td>
+                            <td className="border border-gray-300 px-4 py-2">{row.start?.toLocaleString()}</td>
+                            <td className="border border-gray-300 px-4 py-2">{row.isStopped ? row.stop?.toLocaleString() : "In Progress"}</td>
+                            <td className="border border-gray-300 px-4 py-2">{getDurationStrForDates(row.start, row.stop)}</td>
+                            <td className="border border-gray-300 px-4 py-2">
+                                <div className="flex gap-2 justify-center">
                                     {!row.isStopped ?
-                                        <button onClick={() => stopEntryFunc(row.id)} className="stop-btn">⏹</button>
-                                        : <button onClick={() => newEntryFrom(row)} className="add-btn">➕</button>
+                                        <button onClick={() => stopEntryFunc(row.id)} className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition-colors">⏹</button>
+                                        : <button onClick={() => newEntryFrom(row)} className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition-colors">➕</button>
                                     }
-                                    <button className="delete-btn" onClick={() => deleteEntryFunc(row.id)}>🗑️</button>
+                                    <button className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition-colors" onClick={() => deleteEntryFunc(row.id)}>🗑️</button>
                                 </div>
                             </td>
                         </tr>
@@ -111,21 +131,21 @@ function SummaryTable({ timeSheet }: { timeSheet: TimeSheet }) {
     });
 
     return (
-        <div className="table-container">
-            <table>
+        <div className="overflow-x-auto mb-5">
+            <table className="w-full border-collapse">
                 <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Duration</th>
-                        <th>Entries</th>
+                    <tr className="bg-gray-100">
+                        <th className="border border-gray-300 px-4 py-2 text-left">Name</th>
+                        <th className="border border-gray-300 px-4 py-2 text-right">Duration</th>
+                        <th className="border border-gray-300 px-4 py-2 text-right">Entries</th>
                     </tr>
                 </thead>
                 <tbody>
                     {rows.map((row) => (
                         <tr key={row.name}>
-                            <td>{row.name}</td>
-                            <td>{row.durationStr}</td>
-                            <td>{row.entries.toString()}</td>
+                            <td className="border border-gray-300 px-4 py-2">{row.name}</td>
+                            <td className="border border-gray-300 px-4 py-2 text-right">{row.durationStr}</td>
+                            <td className="border border-gray-300 px-4 py-2 text-right">{row.entries.toString()}</td>
                         </tr>
                     ))}
                 </tbody>
@@ -151,12 +171,12 @@ function ClearDialog({
     if (!isOpen) return null;
 
     return (
-        <div className="dialog-overlay">
-            <div className="dialog">
-                <h3>Clear this timesheet?</h3>
-                <div className="dialog-actions">
-                    <button onClick={() => { onClose(); onClear(); }} className="clear-confirm-btn">Clear</button>
-                    <button onClick={onClose} className="cancel-btn">Cancel</button>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-5 rounded-lg shadow-lg min-w-[300px]">
+                <h3 className="mt-0 mb-4 text-lg font-medium">Clear this timesheet?</h3>
+                <div className="flex gap-3 justify-end mt-5">
+                    <button onClick={() => { onClose(); onClear(); }} className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 transition-colors">Clear</button>
+                    <button onClick={onClose} className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition-colors">Cancel</button>
                 </div>
             </div>
         </div>
@@ -165,19 +185,8 @@ function ClearDialog({
 
 // Main TimeTracker Component
 export default function TimeTracker() {
-    useEffect(() => {
-        let originalExistingTimesheet = JSON.parse(localStorage.getItem('timesheet') || '{"entries": []}') as TimeSheet;
-        const existingTimesheet = {
-            entries: originalExistingTimesheet.entries.map((entry) => ({
-                ...entry,
-                start: new Date(entry.start),
-                stop: new Date(entry.stop || 0),
-            }))
-        };
-        setTimesheet(existingTimesheet);
-    }, []);
-    
-    const [timesheet, setTimesheet] = useState<TimeSheet>({ entries: [] });
+    // Initialize state with data from localStorage using lazy initialization
+    const [timesheet, setTimesheet] = useState<TimeSheet>(() => loadTimesheetFromStorage());
     const [titleIsError, setTitleIsError] = useState(false);
     const [newEntryTitle, setNewEntryTitle] = useState("");
     const [activeView, setActiveView] = useState<'entries' | 'summary'>('entries');
@@ -245,17 +254,17 @@ export default function TimeTracker() {
 
     useEffect(() => {
         const interval = setInterval(() => {
-            setTimesheet({
-                entries: timesheet.entries.map((entry) => {
+            setTimesheet(prevTimesheet => ({
+                entries: prevTimesheet.entries.map((entry) => {
                     if (entry.isStopped) { return entry; }
                     else return { ...entry, stop: new Date() };
                 })
-            });
+            }));
         }, 1000);
         return () => {
             clearInterval(interval);
         };
-    }, [timesheet.entries]);
+    }, []); // Removed dependency on timesheet.entries to prevent re-creating the interval
 
     useEffect(() => {
         const toSave = {
@@ -269,182 +278,33 @@ export default function TimeTracker() {
     }, [timesheet]);
 
     return (
-        <div className="time-tracker">
-            <style>{`
-                .time-tracker {
-                    font-family: Arial, sans-serif;
-                    max-width: 1200px;
-                    margin: 0 auto;
-                    padding: 20px;
-                }
-                
-                h1 {
-                    margin-bottom: 20px;
-                }
-                
-                h2 {
-                    margin-bottom: 15px;
-                }
-                
-                .controls-container {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    margin-bottom: 20px;
-                }
-                
-                .input-controls {
-                    display: flex;
-                    gap: 12px;
-                }
-                
-                .view-controls {
-                    display: flex;
-                    gap: 12px;
-                }
-                
-                .table-container {
-                    overflow-x: auto;
-                    margin-bottom: 20px;
-                }
-                
-                table {
-                    width: 100%;
-                    border-collapse: collapse;
-                    margin-bottom: 20px;
-                }
-                
-                th, td {
-                    border: 1px solid #ddd;
-                    padding: 8px;
-                    text-align: left;
-                }
-                
-                th {
-                    background-color: #f2f2f2;
-                }
-                
-                td:last-child, th:last-child {
-                    text-align: center;
-                }
-                
-                input[type="text"] {
-                    padding: 8px;
-                    border: 1px solid #ddd;
-                    border-radius: 4px;
-                }
-                
-                input.error {
-                    border-color: #f44336;
-                }
-                
-                button {
-                    padding: 8px 16px;
-                    border: none;
-                    border-radius: 4px;
-                    cursor: pointer;
-                }
-                
-                .add-btn {
-                    background-color: #4CAF50;
-                    color: white;
-                }
-                
-                .stop-btn {
-                    background-color: #2196F3;
-                    color: white;
-                }
-                
-                .delete-btn {
-                    background-color: #f44336;
-                    color: white;
-                }
-                
-                .view-btn {
-                    background-color: #2196F3;
-                    color: white;
-                }
-                
-                .clear-btn {
-                    background-color: #f44336;
-                    color: white;
-                }
-                
-                .controls {
-                    display: flex;
-                    gap: 8px;
-                    justify-content: center;
-                }
-                
-                .dialog-overlay {
-                    position: fixed;
-                    top: 0;
-                    left: 0;
-                    right: 0;
-                    bottom: 0;
-                    background-color: rgba(0, 0, 0, 0.5);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    z-index: 1000;
-                }
-                
-                .dialog {
-                    background-color: white;
-                    padding: 20px;
-                    border-radius: 8px;
-                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-                    min-width: 300px;
-                }
-                
-                .dialog h3 {
-                    margin-top: 0;
-                }
-                
-                .dialog-actions {
-                    display: flex;
-                    gap: 12px;
-                    justify-content: flex-end;
-                    margin-top: 20px;
-                }
-                
-                .clear-confirm-btn {
-                    background-color: #ff9800;
-                    color: white;
-                }
-                
-                .cancel-btn {
-                    background-color: #9e9e9e;
-                    color: white;
-                }
-            `}</style>
+        <div className="max-w-6xl mx-auto p-5 font-sans">
+            <h1 className="text-3xl font-bold mb-5">Time Tracker</h1>
             
-            <h1>Time Tracker</h1>
-            
-            <div className="controls-container">
-                <div className="input-controls">
+            <div className="flex justify-between items-center mb-5 flex-wrap gap-3">
+                <div className="flex gap-3">
                     <input 
                         type="text" 
-                        className={titleIsError ? "error" : ""}
+                        className={`px-3 py-2 border rounded ${titleIsError ? "border-red-500" : "border-gray-300"}`}
                         value={newEntryTitle} 
                         onChange={onChangeNewEntryTitle} 
                         placeholder='Name' 
                     />
-                    <button className="add-btn" onClick={createNewEntry}>new</button>
+                    <button className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors" onClick={createNewEntry}>new</button>
                 </div>
                 
-                <div className="view-controls">
+                <div className="flex gap-3">
                     {activeView == 'entries' && 
-                        <button className="view-btn" onClick={() => setActiveView('summary')}>show summary</button>
+                        <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors" onClick={() => setActiveView('summary')}>show summary</button>
                     }
                     {activeView == 'summary' && 
-                        <button className="view-btn" onClick={() => setActiveView('entries')}>show entries</button>
+                        <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors" onClick={() => setActiveView('entries')}>show entries</button>
                     }
-                    <button className="clear-btn" onClick={() => setShowingClearDialog(true)}>Clear</button>
+                    <button className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors" onClick={() => setShowingClearDialog(true)}>Clear</button>
                 </div>
             </div>
             
-            <h2>{activeView == 'entries' ? "Entries" : "Summary"}</h2>
+            <h2 className="text-2xl font-semibold mb-4">{activeView == 'entries' ? "Entries" : "Summary"}</h2>
             
             {activeView == 'entries' && 
                 <BasicTable 
