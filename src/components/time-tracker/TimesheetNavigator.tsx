@@ -17,6 +17,7 @@ import {
   FileText,
   MoreVertical,
 } from "lucide-react";
+import { ModeToggle } from "@/components/mode-toggle";
 
 interface TimesheetNavigatorProps {
   data: TimesheetData;
@@ -58,53 +59,56 @@ export function TimesheetNavigator({
   };
 
   return (
-    <div className="flex items-center gap-2 justify-between w-full">
-      <div className="flex items-center gap-2">
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={goToPrevious}
-          disabled={!hasPrevious}
-          className="h-10 w-10"
-          title="Previous timesheet"
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </Button>
+    <div className="flex items-center gap-2 w-full">
+      {/* Navigation Arrows */}
+      <Button
+        variant="outline"
+        size="icon"
+        onClick={goToPrevious}
+        disabled={!hasPrevious}
+        className="h-10 w-10 shrink-0"
+        title="Previous timesheet"
+      >
+        <ChevronLeft className="h-4 w-4" />
+      </Button>
 
-        <div className="flex items-center gap-3 px-4 py-2 border rounded-md bg-card min-w-[280px]">
-          <div className="rounded-md bg-primary/10 p-2">
-            <FileText className="h-4 w-4 text-primary" />
-          </div>
-          <div className="flex flex-col flex-1">
-            <span className="font-semibold text-sm leading-tight">
-              {activeTimesheet.name}
-            </span>
-            <span className="text-xs text-muted-foreground">
-              {formatTimesheetDate(activeTimesheet.createdAt)} •{" "}
-              {activeTimesheet.entries.length}{" "}
-              {activeTimesheet.entries.length === 1 ? "entry" : "entries"}
-            </span>
-          </div>
-          <div className="text-xs text-muted-foreground font-medium">
-            {currentIndex + 1} / {sortedTimesheets.length}
-          </div>
+      {/* Timesheet Info Card */}
+      <div className="flex items-center gap-2 sm:gap-3 px-2 sm:px-4 py-2 border rounded-md bg-card flex-1 min-w-0">
+        <div className="rounded-md bg-primary/10 p-1.5 sm:p-2 shrink-0">
+          <FileText className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
         </div>
-
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={goToNext}
-          disabled={!hasNext}
-          className="h-10 w-10"
-          title="Next timesheet"
-        >
-          <ChevronRight className="h-4 w-4" />
-        </Button>
+        <div className="flex flex-col flex-1 min-w-0">
+          <span className="font-semibold text-xs sm:text-sm leading-tight truncate">
+            {activeTimesheet.name}
+          </span>
+          <span className="text-[10px] sm:text-xs text-muted-foreground truncate">
+            <span className="hidden sm:inline">
+              {formatTimesheetDate(activeTimesheet.createdAt)} •{" "}
+            </span>
+            {activeTimesheet.entries.length}{" "}
+            {activeTimesheet.entries.length === 1 ? "entry" : "entries"}
+          </span>
+        </div>
+        <div className="text-[10px] sm:text-xs text-muted-foreground font-medium whitespace-nowrap shrink-0">
+          {currentIndex + 1}/{sortedTimesheets.length}
+        </div>
       </div>
 
+      <Button
+        variant="outline"
+        size="icon"
+        onClick={goToNext}
+        disabled={!hasNext}
+        className="h-10 w-10 shrink-0"
+        title="Next timesheet"
+      >
+        <ChevronRight className="h-4 w-4" />
+      </Button>
+
+      {/* Actions Menu */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="icon" className="h-10 w-10">
+          <Button variant="outline" size="icon" className="h-10 w-10 shrink-0">
             <MoreVertical className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
@@ -137,6 +141,9 @@ export function TimesheetNavigator({
           )}
         </DropdownMenuContent>
       </DropdownMenu>
+
+      {/* Theme Toggle */}
+      <ModeToggle />
     </div>
   );
 }

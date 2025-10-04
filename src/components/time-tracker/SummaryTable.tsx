@@ -63,61 +63,79 @@ export function SummaryTable({ entries, now }: SummaryTableProps) {
   summaryRows.sort((a, b) => b.duration - a.duration);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Clock className="h-5 w-5" />
+          <CardTitle className="text-base sm:text-lg flex items-center gap-2">
+            <Clock className="h-4 w-4 sm:h-5 sm:w-5" />
             Total Time Tracked
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-3xl font-bold font-mono">
+          <div className="text-2xl sm:text-3xl font-bold font-mono">
             {formatDuration(totalDuration)}
           </div>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="text-xs sm:text-sm text-muted-foreground mt-1">
             Across {entries.length} {entries.length === 1 ? "entry" : "entries"}
           </p>
         </CardContent>
       </Card>
 
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[40%]">Task</TableHead>
-              <TableHead className="w-[15%]">Entries</TableHead>
-              <TableHead className="w-[20%]">Duration</TableHead>
-              <TableHead className="w-[25%]">Percentage</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {summaryRows.map((row) => (
-              <TableRow key={row.name}>
-                <TableCell className="font-medium">{row.name}</TableCell>
-                <TableCell>
-                  <Badge variant="secondary">{row.entries.length}</Badge>
-                </TableCell>
-                <TableCell className="font-mono">
-                  {formatDuration(row.duration)}
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <div className="flex-1 bg-muted rounded-full h-2 overflow-hidden">
-                      <div
-                        className="bg-primary h-full rounded-full transition-all"
-                        style={{ width: `${row.percentage}%` }}
-                      />
-                    </div>
-                    <span className="text-sm font-medium min-w-[45px] text-right">
-                      {row.percentage}%
-                    </span>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+      <div className="w-full overflow-x-auto -mx-4 sm:mx-0">
+        <div className="inline-block min-w-full align-middle px-4 sm:px-0">
+          <div className="rounded-md border overflow-hidden">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="min-w-[150px] sm:w-[40%]">
+                    Task
+                  </TableHead>
+                  <TableHead className="min-w-[80px] sm:w-[15%]">
+                    Entries
+                  </TableHead>
+                  <TableHead className="min-w-[100px] sm:w-[20%]">
+                    Duration
+                  </TableHead>
+                  <TableHead className="min-w-[120px] sm:w-[25%]">
+                    Percentage
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {summaryRows.map((row) => (
+                  <TableRow key={row.name}>
+                    <TableCell className="font-medium">
+                      <span className="truncate max-w-[200px] inline-block">
+                        {row.name}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="secondary" className="text-xs">
+                        {row.entries.length}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="font-mono text-sm whitespace-nowrap">
+                      {formatDuration(row.duration)}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <div className="flex-1 bg-muted rounded-full h-2 overflow-hidden min-w-[60px]">
+                          <div
+                            className="bg-primary h-full rounded-full transition-all"
+                            style={{ width: `${row.percentage}%` }}
+                          />
+                        </div>
+                        <span className="text-xs sm:text-sm font-medium min-w-[45px] text-right whitespace-nowrap">
+                          {row.percentage}%
+                        </span>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </div>
       </div>
     </div>
   );

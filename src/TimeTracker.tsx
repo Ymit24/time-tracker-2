@@ -103,16 +103,16 @@ export default function TimeTracker() {
   // Loading state
   if (!activeTimesheet) {
     return (
-      <div className="container mx-auto py-8 px-4 max-w-6xl">
+      <div className="container mx-auto py-4 px-2 sm:py-8 sm:px-4 max-w-6xl">
         <p>Loading...</p>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto py-8 px-4 max-w-6xl">
+    <div className="container mx-auto py-4 px-2 sm:py-8 sm:px-4 max-w-6xl">
       {/* Timesheet Navigator */}
-      <div className="mb-6">
+      <div className="mb-4 sm:mb-6">
         <TimesheetNavigator
           data={data}
           activeTimesheet={activeTimesheet}
@@ -124,7 +124,7 @@ export default function TimeTracker() {
       </div>
 
       {/* New Entry Form */}
-      <div className="mb-6">
+      <div className="mb-4 sm:mb-6">
         <NewEntryForm
           value={newEntryTitle}
           onChange={handleNewEntryChange}
@@ -135,23 +135,23 @@ export default function TimeTracker() {
 
       {/* Entries / Summary Card */}
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div className="flex gap-2">
+        <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex gap-2 flex-1">
             <Button
               variant={activeView === "entries" ? "default" : "outline"}
               onClick={() => setActiveView("entries")}
-              className="gap-2"
+              className="gap-2 flex-1 sm:flex-initial"
             >
               <Timer className="h-4 w-4" />
-              Entries
+              <span>Entries</span>
             </Button>
             <Button
               variant={activeView === "summary" ? "default" : "outline"}
               onClick={() => setActiveView("summary")}
-              className="gap-2"
+              className="gap-2 flex-1 sm:flex-initial"
             >
               <Calendar className="h-4 w-4" />
-              Summary
+              <span>Summary</span>
             </Button>
           </div>
           {activeView === "entries" && activeTimesheet.entries.length > 0 && (
@@ -159,7 +159,7 @@ export default function TimeTracker() {
               variant="outline"
               size="sm"
               onClick={() => setShowingClearDialog(true)}
-              className="text-destructive hover:text-destructive"
+              className="text-destructive hover:text-destructive w-full sm:w-auto"
             >
               <Trash2 className="mr-2 h-4 w-4" />
               Clear All
