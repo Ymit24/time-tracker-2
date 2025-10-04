@@ -90,7 +90,7 @@ export function TimesheetNavigator({
           </span>
         </div>
         <div className="text-[10px] sm:text-xs text-muted-foreground font-medium whitespace-nowrap shrink-0">
-          {currentIndex + 1}/{sortedTimesheets.length}
+          {sortedTimesheets.length - currentIndex}/{sortedTimesheets.length}
         </div>
       </div>
 
