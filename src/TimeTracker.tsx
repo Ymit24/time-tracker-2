@@ -677,9 +677,28 @@ export default function TimeTracker() {
   };
 
   const createNewTimesheet = () => {
+    const now = new Date();
+    const month = now.getMonth() + 1; // getMonth() returns 0-11
+    const day = now.getDate();
+    const year = now.getFullYear();
+    const baseDate = `${month}-${day}-${year}`;
+
+    // Check if a timesheet with this date already exists
+    let dateName = baseDate;
+    const existingNames = data.timesheets.map((ts) => ts.name);
+
+    if (existingNames.includes(baseDate)) {
+      // Find the highest number suffix for this date
+      let counter = 2;
+      while (existingNames.includes(`${baseDate} ${counter}`)) {
+        counter++;
+      }
+      dateName = `${baseDate} ${counter}`;
+    }
+
     const newTimesheet: Timesheet = {
       id: generateId(),
-      name: `Timesheet ${data.timesheets.length + 1}`,
+      name: dateName,
       createdAt: new Date(),
       entries: [],
     };
