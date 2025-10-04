@@ -878,7 +878,11 @@ export default function TimeTracker() {
                     ref={inputRef}
                     id="entry-name"
                     type="text"
-                    className={titleIsError ? "border-destructive" : ""}
+                    className={
+                      titleIsError
+                        ? "bg-muted/50 dark:bg-muted border-destructive"
+                        : "bg-muted/50 dark:bg-muted"
+                    }
                     value={newEntryTitle}
                     onChange={onChangeNewEntryTitle}
                     onKeyPress={handleKeyPress}
