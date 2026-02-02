@@ -1,45 +1,16 @@
 # Build stage
-FROM node:20-alpine AS builder
-
-# Install pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
-
+FROM node:20-alpine AS build
 WORKDIR /app
-
-# Copy package files
-COPY package.json pnpm-lock.yaml ./
-
-# Install dependencies
-RUN pnpm install --frozen-lockfile
-
-# Copy source code
+COPY package*.json ./
+RUN npm ci
 COPY . .
-
-# Build the application
-RUN pnpm build
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
+RUN npm run build
 
 # Production stage
 FROM nginx:alpine
-
-ENV PORT=80
-ENV HOST=_
-
-# Copy built assets from builder stage
-COPY --from=builder /app/dist /usr/share/nginx/html
-
-# Copy nginx configuration for SPA routing with dynamic port and host
-COPY <<EOF /etc/nginx/conf.d/default.conf
-server {
-    listen 3001;
-    server_name time.christiansmith.live;
-    root /usr/share/nginx/html;
-    index index.html;
-    location / {
-        try_files \$uri \$uri/ /index.html;
-    }
-}
-EOF
-
-EXPOSE ${PORT}
-
+COPY --from=build /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
