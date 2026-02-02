@@ -6,10 +6,10 @@ services:
     container_name: time-tracker-2
     restart: unless-stopped
     ports:
-      - "3000:80"
+      - "${PORT}:80"
     environment:
-      - PORT=80
-      - HOST=_
+      - PORT=${PORT}
+      - HOST=${HOST}
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost/"]
       interval: 30s
