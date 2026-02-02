@@ -1,27 +1,21 @@
+version: "3.8"
+
 services:
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: time-tracker-2
-    restart: unless-stopped
-    expose:
-      - "80"
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.time.rule=Host(`time.christiansmith.live`)
-      - traefik.http.routers.time.entrypoints=websecure
-      - traefik.http.routers.time.tls=true
-      - traefik.http.routers.time.tls.certresolver=letsencrypt
-      - traefik.http.services.time.loadbalancer.server.port=80
-      # Optional: redirect http -> https (if you have a web entrypoint)
-      - traefik.http.routers.time-http.rule=Host(`time.christiansmith.live`)
-      - traefik.http.routers.time-http.entrypoints=web
-      - traefik.http.routers.time-http.middlewares=redirect-to-https
-      - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
+    image: stuff-time-tracker-9eclty-app:latest
+    # or build via Dokploy if it supports Swarm builds; otherwise push to a registry
+    deploy:
+      labels:
+        - traefik.enable=true
+        - traefik.http.routers.time.rule=Host(`time.christiansmith.live`)
+        - traefik.http.routers.time.entrypoints=websecure
+        - traefik.http.routers.time.tls=true
+        - traefik.http.routers.time.tls.certresolver=letsencrypt
+        - traefik.http.services.time.loadbalancer.server.port=80
+      replicas: 1
     networks:
-      - traefik
+      - dokploy-network
 
 networks:
-  traefik:
+  dokploy-network:
     external: true
