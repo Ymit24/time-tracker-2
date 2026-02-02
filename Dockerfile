@@ -21,22 +21,25 @@ RUN pnpm build
 # Production stage
 FROM nginx:alpine
 
+ENV PORT=80
+ENV HOST=_
+
 # Copy built assets from builder stage
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Copy nginx configuration for SPA routing
-RUN echo 'server { \
-    listen 80; \
-    server_name _; \
-    root /usr/share/nginx/html; \
-    index index.html; \
-    location / { \
-        try_files $uri $uri/ /index.html; \
-    } \
-}' > /etc/nginx/conf.d/default.conf
+# Copy nginx configuration for SPA routing with dynamic port and host
+COPY <<EOF /etc/nginx/conf.d/default.conf
+server {
+    listen \${PORT};
+    server_name \${HOST};
+    root /usr/share/nginx/html;
+    index index.html;
+    location / {
+        try_files \$uri \$uri/ /index.html;
+    }
+}
+EOF
 
-# Expose port 80
-EXPOSE 80
+EXPOSE \${PORT}
 
-# Start nginx
 CMD ["nginx", "-g", "daemon off;"]

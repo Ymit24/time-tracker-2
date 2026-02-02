@@ -7,6 +7,9 @@ services:
     restart: unless-stopped
     ports:
       - "3000:80"
+    environment:
+      - PORT=80
+      - HOST=_
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost/"]
       interval: 30s
