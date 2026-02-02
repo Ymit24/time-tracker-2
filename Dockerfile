@@ -40,6 +40,6 @@ server {
 }
 EOF
 
-EXPOSE \${PORT}
+EXPOSE ${PORT}
 
 CMD ["nginx", "-g", "daemon off;"]
