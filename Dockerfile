@@ -30,8 +30,8 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 # Copy nginx configuration for SPA routing with dynamic port and host
 COPY <<EOF /etc/nginx/conf.d/default.conf
 server {
-    listen \${PORT};
-    server_name \${HOST};
+    listen ${PORT};
+    server_name ${HOST};
     root /usr/share/nginx/html;
     index index.html;
     location / {
