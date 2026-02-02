@@ -99,13 +99,14 @@ export function useTimesheet() {
     if (!entry) return;
 
     updateTimesheet(activeTimesheet.id, {
-      entries: [
-        ...activeTimesheet.entries.filter((x) => x.id !== entryId),
-        {
-          ...createData(entryId, entry.name, entry.start, new Date()),
-          isStopped: true,
-        },
-      ],
+      entries: activeTimesheet.entries.map((x) =>
+        x.id === entryId
+          ? {
+              ...createData(entryId, entry.name, entry.start, new Date()),
+              isStopped: true,
+            }
+          : x
+      ),
     });
   };
 

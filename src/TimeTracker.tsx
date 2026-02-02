@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "./components/ui/button";
-import { Card, CardContent, CardHeader } from "./components/ui/card";
+import { Card, CardContent } from "./components/ui/card";
 import { Calendar, Timer, Trash2 } from "lucide-react";
 import { useTimesheet } from "./hooks/useTimesheet";
 import { useNow } from "./hooks/useNow";
@@ -103,16 +103,16 @@ export default function TimeTracker() {
   // Loading state
   if (!activeTimesheet) {
     return (
-      <div className="container mx-auto py-4 px-2 sm:py-8 sm:px-4 max-w-6xl">
-        <p>Loading...</p>
+      <div className="container mx-auto py-8 px-4 max-w-4xl min-h-screen flex items-center justify-center">
+        <p className="text-muted-foreground animate-pulse">Loading...</p>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto py-4 px-2 sm:py-8 sm:px-4 max-w-6xl">
-      {/* Timesheet Navigator */}
-      <div className="mb-4 sm:mb-6">
+    <div className="container mx-auto py-8 px-4 max-w-4xl min-h-screen flex flex-col gap-8">
+      {/* Header & Navigator */}
+      <div className="flex flex-col gap-6">
         <TimesheetNavigator
           data={data}
           activeTimesheet={activeTimesheet}
@@ -121,10 +121,8 @@ export default function TimeTracker() {
           onRenameTimesheet={handleOpenRenameDialog}
           onDeleteTimesheet={handleOpenDeleteDialog}
         />
-      </div>
-
-      {/* New Entry Form */}
-      <div className="mb-4 sm:mb-6">
+        
+        {/* New Entry Form */}
         <NewEntryForm
           value={newEntryTitle}
           onChange={handleNewEntryChange}
@@ -133,53 +131,59 @@ export default function TimeTracker() {
         />
       </div>
 
-      {/* Entries / Summary Card */}
-      <Card>
-        <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex gap-2 flex-1">
-            <Button
-              variant={activeView === "entries" ? "default" : "outline"}
-              onClick={() => setActiveView("entries")}
-              className="gap-2 flex-1 sm:flex-initial"
-            >
-              <Timer className="h-4 w-4" />
-              <span>Entries</span>
-            </Button>
-            <Button
-              variant={activeView === "summary" ? "default" : "outline"}
-              onClick={() => setActiveView("summary")}
-              className="gap-2 flex-1 sm:flex-initial"
-            >
-              <Calendar className="h-4 w-4" />
-              <span>Summary</span>
-            </Button>
-          </div>
-          {activeView === "entries" && activeTimesheet.entries.length > 0 && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowingClearDialog(true)}
-              className="text-destructive hover:text-destructive w-full sm:w-auto"
-            >
-              <Trash2 className="mr-2 h-4 w-4" />
-              Clear All
-            </Button>
-          )}
-        </CardHeader>
-        <CardContent>
-          {activeView === "entries" ? (
-            <BasicTable
-              entries={activeTimesheet.entries}
-              now={now}
-              onNewEntryFrom={newEntryFrom}
-              onStopEntry={stopEntry}
-              onDeleteEntry={deleteEntry}
-            />
-          ) : (
-            <SummaryTable entries={activeTimesheet.entries} now={now} />
-          )}
-        </CardContent>
-      </Card>
+      {/* Main Content Area */}
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center justify-between">
+            <div className="flex p-1 bg-muted/50 rounded-lg">
+                <Button
+                variant={activeView === "entries" ? "secondary" : "ghost"}
+                size="sm"
+                onClick={() => setActiveView("entries")}
+                className="gap-2 text-xs sm:text-sm font-medium"
+                >
+                <Timer className="h-4 w-4" />
+                <span>Entries</span>
+                </Button>
+                <Button
+                variant={activeView === "summary" ? "secondary" : "ghost"}
+                size="sm"
+                onClick={() => setActiveView("summary")}
+                className="gap-2 text-xs sm:text-sm font-medium"
+                >
+                <Calendar className="h-4 w-4" />
+                <span>Summary</span>
+                </Button>
+            </div>
+            
+            {activeView === "entries" && activeTimesheet.entries.length > 0 && (
+                <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowingClearDialog(true)}
+                className="text-muted-foreground hover:text-destructive text-xs"
+                >
+                <Trash2 className="mr-2 h-3 w-3" />
+                Clear All
+                </Button>
+            )}
+        </div>
+
+        <Card className="min-h-[400px]">
+            <CardContent className="p-0">
+            {activeView === "entries" ? (
+                <BasicTable
+                entries={activeTimesheet.entries}
+                now={now}
+                onNewEntryFrom={newEntryFrom}
+                onStopEntry={stopEntry}
+                onDeleteEntry={deleteEntry}
+                />
+            ) : (
+                <SummaryTable entries={activeTimesheet.entries} now={now} />
+            )}
+            </CardContent>
+        </Card>
+      </div>
 
       {/* Clear All Entries Dialog */}
       <ConfirmDialog

@@ -57,13 +57,13 @@ export function RenameDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{description}</DialogDescription>
+      <DialogContent className="sm:max-w-[425px] p-6">
+        <DialogHeader className="gap-2">
+          <DialogTitle className="text-xl">{title}</DialogTitle>
+          <DialogDescription className="text-base text-muted-foreground">{description}</DialogDescription>
         </DialogHeader>
-        <div className="py-4">
-          <Label htmlFor="rename-input">Timesheet Name</Label>
+        <div className="py-6">
+          <Label htmlFor="rename-input" className="sr-only">Timesheet Name</Label>
           <Input
             ref={inputRef}
             id="rename-input"
@@ -72,14 +72,14 @@ export function RenameDialog({
             onChange={handleChange}
             onKeyPress={handleKeyPress}
             placeholder="Enter timesheet name"
-            className="mt-2"
+            className="h-11 text-lg"
           />
         </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={handleCancel}>
+        <DialogFooter className="gap-2 sm:gap-0">
+          <Button variant="outline" onClick={handleCancel} className="h-10">
             Cancel
           </Button>
-          <Button onClick={onConfirm} disabled={value.trim().length === 0}>
+          <Button onClick={onConfirm} disabled={value.trim().length === 0} className="h-10 px-6">
             Rename
           </Button>
         </DialogFooter>

@@ -36,16 +36,16 @@ export function ConfirmDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{description}</DialogDescription>
+      <DialogContent className="sm:max-w-[425px] p-6 gap-6">
+        <DialogHeader className="gap-2">
+          <DialogTitle className="text-xl">{title}</DialogTitle>
+          <DialogDescription className="text-base text-muted-foreground">{description}</DialogDescription>
         </DialogHeader>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+        <DialogFooter className="gap-2 sm:gap-0">
+          <Button variant="outline" onClick={() => onOpenChange(false)} className="h-10">
             {cancelText}
           </Button>
-          <Button variant={variant} onClick={handleConfirm}>
+          <Button variant={variant} onClick={handleConfirm} className="h-10 px-6">
             {confirmText}
           </Button>
         </DialogFooter>

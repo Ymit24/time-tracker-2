@@ -1,7 +1,6 @@
 import type { TimeEntry } from "@/types/timesheet";
 import { getDurationStrFor } from "@/utils/time";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -10,7 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Play, Square, Trash2, Clock, Timer } from "lucide-react";
+import { Play, Square, Trash2, Clock } from "lucide-react";
 
 interface BasicTableProps {
   entries: TimeEntry[];
@@ -42,105 +41,106 @@ export function BasicTable({
   }
 
   return (
-    <div className="w-full overflow-x-auto -mx-4 sm:mx-0">
-      <div className="inline-block min-w-full align-middle px-4 sm:px-0">
-        <div className="rounded-md border overflow-hidden">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="min-w-[150px] sm:w-[40%]">Task</TableHead>
-                <TableHead className="min-w-[80px] sm:w-[15%]">Start</TableHead>
-                <TableHead className="min-w-[80px] sm:w-[15%] hidden sm:table-cell">
-                  Stop
-                </TableHead>
-                <TableHead className="min-w-[90px] sm:w-[15%]">
-                  Duration
-                </TableHead>
-                <TableHead className="min-w-[140px] sm:w-[15%] text-right">
-                  Actions
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {entries.map((entry) => {
-                const isRunning = !entry.isStopped;
-                return (
-                  <TableRow
-                    key={entry.id}
-                    className={isRunning ? "bg-primary/5" : ""}
-                  >
-                    <TableCell className="font-medium">
-                      <div className="flex items-center gap-2">
-                        {isRunning && (
-                          <Badge
-                            variant="default"
-                            className="px-1.5 py-0 h-5 text-[10px] animate-pulse"
-                          >
-                            <Timer className="h-3 w-3" />
-                          </Badge>
-                        )}
-                        <span className="truncate max-w-[200px]">
-                          {entry.name}
-                        </span>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
-                      {entry.start.toLocaleTimeString([], {
+    <div className="w-full">
+        <Table>
+        <TableHeader>
+            <TableRow className="hover:bg-transparent border-b border-border/50">
+            <TableHead className="w-[40%] pl-6">Task</TableHead>
+            <TableHead className="w-[15%]">Start</TableHead>
+            <TableHead className="w-[15%] hidden sm:table-cell">
+                Stop
+            </TableHead>
+            <TableHead className="w-[15%]">
+                Duration
+            </TableHead>
+            <TableHead className="w-[15%] text-right pr-6">
+                Actions
+            </TableHead>
+            </TableRow>
+        </TableHeader>
+        <TableBody>
+            {entries.map((entry) => {
+            const isRunning = !entry.isStopped;
+            return (
+                <TableRow
+                key={entry.id}
+                className={`group transition-all border-b border-border/40 ${
+                    isRunning 
+                    ? "bg-primary/10 border-primary/20 hover:bg-primary/15" 
+                    : "hover:bg-muted/30"
+                }`}
+                >
+                <TableCell className="font-medium pl-6 py-4">
+                    <div className="flex items-center gap-3">
+                    {isRunning ? (
+                        <div className="relative flex h-2.5 w-2.5 shadow-[0_0_8px_rgba(var(--primary),0.5)]">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span>
+                        </div>
+                    ) : (
+                         <div className="h-2.5 w-2.5 rounded-full bg-muted-foreground/20"></div>
+                    )}
+                    <span className={`truncate max-w-[200px] sm:max-w-[300px] text-base ${isRunning ? "text-primary font-semibold" : ""}`}>
+                        {entry.name}
+                    </span>
+                    </div>
+                </TableCell>
+                <TableCell className={`text-sm whitespace-nowrap font-mono ${isRunning ? "text-primary/80" : "text-muted-foreground"}`}>
+                    {entry.start.toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    })}
+                </TableCell>
+                <TableCell className={`text-sm whitespace-nowrap hidden sm:table-cell font-mono ${isRunning ? "text-primary/80" : "text-muted-foreground"}`}>
+                    {entry.isStopped && entry.stop
+                    ? entry.stop.toLocaleTimeString([], {
                         hour: "2-digit",
                         minute: "2-digit",
-                      })}
-                    </TableCell>
-                    <TableCell className="text-sm text-muted-foreground whitespace-nowrap hidden sm:table-cell">
-                      {entry.isStopped && entry.stop
-                        ? entry.stop.toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })
-                        : "—"}
-                    </TableCell>
-                    <TableCell className="font-mono text-sm whitespace-nowrap">
-                      {getDurationStrFor(entry, now)}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-1">
-                        {isRunning ? (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => onStopEntry(entry.id)}
-                            className="h-8 px-2 whitespace-nowrap"
-                          >
-                            <Square className="h-3.5 w-3.5 sm:mr-1" />
-                            <span className="hidden sm:inline">Stop</span>
-                          </Button>
-                        ) : (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => onNewEntryFrom(entry)}
-                            className="h-8 px-2 whitespace-nowrap"
-                          >
-                            <Play className="h-3.5 w-3.5 sm:mr-1" />
-                            <span className="hidden sm:inline">Start</span>
-                          </Button>
-                        )}
+                        })
+                    : "—"}
+                </TableCell>
+                <TableCell className={`font-mono text-sm font-medium whitespace-nowrap ${isRunning ? "text-primary" : ""}`}>
+                    {getDurationStrFor(entry, now)}
+                </TableCell>
+                <TableCell className="text-right pr-6">
+                    <div className="flex justify-end gap-1">
+                    {isRunning ? (
                         <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => onDeleteEntry(entry.id)}
-                          className="h-8 w-8 p-0 hover:text-destructive hover:bg-destructive/10"
+                        size="icon"
+                        variant="default" 
+                        onClick={() => onStopEntry(entry.id)}
+                        className="h-8 w-8 shadow-sm"
+                        title="Stop"
                         >
-                          <Trash2 className="h-3.5 w-3.5" />
+                        <Square className="h-3.5 w-3.5 fill-current" />
                         </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </div>
-      </div>
+                    ) : (
+                        <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => onNewEntryFrom(entry)}
+                        className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10"
+                        title="Resume"
+                        >
+                        <Play className="h-4 w-4 fill-current" />
+                        </Button>
+                    )}
+                    <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => onDeleteEntry(entry.id)}
+                        className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                        title="Delete"
+                    >
+                        <Trash2 className="h-4 w-4" />
+                    </Button>
+                    </div>
+                </TableCell>
+                </TableRow>
+            );
+            })}
+        </TableBody>
+        </Table>
     </div>
   );
 }
